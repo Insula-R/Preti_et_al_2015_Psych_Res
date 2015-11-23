@@ -1,0 +1,128 @@
+### Codes to create Figure 1 in the article
+
+###################################################################################################################
+### This material is provided to the aims of reproducibility and replicability of the findings reported in the paper:
+
+### Antonio Preti, Sara Siddi, Marcello Vellante, Rosanna Scanu, Tamara Muratore, Mersia Gabrielli, 
+### Debora Tronci, Carmelo Masala, Donatella Rita Petretto
+### Bifactor structure of the schizotypal personality questionnaire (SPQ). Psychiatry Research, 2015, submitted.
+
+###    Principal Investigator of the study:
+###    Antonio Preti, M.D.
+###    Centro Medico Genneruxi
+###    Via Costantinopoli 42, 09129 Cagliari – Italy 
+###    e-mail: apreti@tin.it 
+
+### Cagliari (Italy), August 27, 2015.
+
+### The codes and the data are provided as free software, under the terms 
+### of the GNU General Public License as published by the Free Software Foundation, 
+### either version 3 of the License, or any later version.
+
+### This material is distributed in the hope that it will be useful,
+### but WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+### See the GNU General Public License for more details.
+### You can consult the GNU General Public License
+### at: http://www.gnu.org/licenses/.
+
+### Please, also consult the "General statement" for information on how to use and cut these codes.
+###################################################################################################################
+
+########################################################################
+###
+### SPQ - Codes to create Figure 1 in the article
+###
+########################################################################
+
+
+
+library(diagram)
+
+### set thye space on the window
+
+ par(mar = c(1,1,1,1), mfrow = c(2, 2))
+
+
+### Unidimensional model
+
+### pos = (1,9) indicates that one element will be in row 1, 9 elements will be in position 2
+### box.type --> va specificata la sequenza attesa delle forme del box
+
+ names <- c("","","IF","","", "ESA","","", "MT","","", "UPE","Unidimensional","", "OB", "","","NCF", "","","OS","","", "CA", "","","S")
+ M <- matrix(nrow = 27, ncol = 27, byrow = TRUE, data = 0)
+ 
+
+ M[3,13] <- ""; M[6,13]<- ""; M[9,13]<- ""; M[12,13]<- ""; M[15,13]<- ""; M[18, 13]<- ""; M[21, 13]<- ""; M[24, 13]<- ""; M[27, 13] <- ""
+ plotmat(M, pos = c(3,3,3,3,3,3,3,3,3), curve = 0, name = names, lwd = 1, 
+ box.lwd = 1.5, cex.txt = 0.8, box.type = c("none", "none","rect","none", "none","rect","none", "none","rect","none", "none","rect","round", "none","rect",
+			"none", "none","rect", "none", "none","rect", "none", "none","rect", "none", "none","rect"),
+		box.size = c(0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.15,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1),
+		box.prop = 0.5, relsize = 0.75)
+
+
+
+### Correlated traits model
+
+
+
+ names <- c("","","IF", "","", "MT","","", "UPE", "Pos","","OB", "","", "OS","","","S",  "","","ESA","Neg","","NCF","","","CA")
+ M <- matrix(nrow = 27, ncol = 27, byrow = TRUE, data = 0)
+
+ curves <- matrix(nrow = ncol(M), ncol = ncol(M), 0)	### THis fixes the curvature of the arrows at 0 all over the matrix
+ curves[10,22] <- curves[22,10] <- 0.2		### This change the curvature of the arrows at the prespecified edges
+
+
+  M[3,10] <- ""; M[6,10]<- ""; M[9,10]<- ""; M[12,10]<- ""; M[15,10]<- ""; M[18,10]<- ""; M[21,22]<- ""; M[24,22]<- ""; M[27,22]<- ""; M[10,22]<- ""; M[22,10] <- ""
+
+ plotmat(M, pos = c(3,3,3,3,3,3,3,3,3),  curve = curves, name = names, lwd = 1, 
+ box.lwd = 1.5, cex.txt = 0.8, box.type = c("none", "none","rect","none", "none","rect","none", "none","rect","circle", "none","rect","none", "none","rect",
+			"none", "none","rect","none", "none","rect","circle", "none","rect","none", "none","rect"), 
+		box.prop = 0.5, relsize = 0.85)
+
+
+
+### Second order model
+
+names <- c("", "", "IF", "", "", "MT","", "", "UPE", "", "Pos","OB", "2nd Order", "", "OS",  "", "Neg", "S", "", "",  "ESA","", "", "NCF","", "", "CA")
+ M <- matrix(nrow = 27, ncol = 27, byrow = TRUE, data = 0)
+
+ curves <- matrix(nrow = ncol(M), ncol = ncol(M), 0)	### THis fixes the curvature of the arrows at 0 all over the matrix
+ 
+
+ M[3,11] <- ""; M[6,11] <- ""; M[9,11] <- ""; M[12,11]<- ""; M[15,11]<- ""; M[11,13]<- "";  M[17,13]<- ""; M[18,11]<- ""; M[21,17]<- ""; M[24,17]<- ""; M[27,17]<- ""; 
+
+ plotmat(M, pos = c(3,3,3,3,3,3,3,3,3),  curve = curves, name = names, lwd = 1, 
+ box.lwd = 1.5, cex.txt = 0.8, box.type = c("none", "none","rect","none", "none","rect","none", "none","rect","none", "circle", "rect",
+						"ellipse", "none", "rect", "none", "circle", "rect", "none", 
+						"none","rect","none", "none","rect","none", "none","rect"),
+		box.prop = 0.5, relsize = 0.85)
+
+
+
+
+### Bifactor model
+
+  names <- c("", "IF", "", "","MT", "", "","UPE", "", "Pos","OB", "",  "","OS","General", "", "S","", "","ESA","", "Neg", "NCF","", "", "CA","")
+
+  M <- matrix(nrow = 27, ncol = 27, byrow = TRUE, data = 0)
+
+  curves <- matrix(nrow = ncol(M), ncol = ncol(M), 0)	### THis fixes the curvature of the arrows at 0 all over the matrix
+
+  M[2,10] <- ""; M[5, 10]<- ""; M[8, 10]<- ""; M[11, 10]<- ""; M[14, 10]<- ""; M[17, 10]<- ""; M[20, 22]<- ""; M[23, 22]<- ""; M[26, 22] <- ""
+  M[2,15] <- ""; M[5,15]<- ""; M[8,15]<- ""; M[11,15]<- ""; M[14,15]<- ""; M[17,15]<- "";  M[20, 15]<- ""; M[23, 15]<- ""; M[26, 15] <- ""
+
+  plotmat(M, pos = c(3,3,3,3,3,3,3,3,3),  curve = curves, name = names, lwd = 1, 
+  box.lwd = 1.5, cex.txt = 0.8, box.type = c("none", "rect","none","none", "rect","none","none", "rect","none","circle", "rect","none","none", "rect","ellipse",
+		"none", "rect","none","none", "rect","none","circle", "rect","none","none", "rect","none"),
+		box.prop = 0.5, relsize = 0.85)
+
+ ###
+
+ par(mfrow = c(1, 1))
+
+### after saving, dev.off()
+
+
+

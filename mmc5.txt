@@ -1,0 +1,1234 @@
+#### Codes for the PCA in the training set and for the CFA in the test set
+
+
+###################################################################################################################
+### This material is provided to the aims of reproducibility and replicability of the findings reported in the paper:
+
+### Antonio Preti, Sara Siddi, Marcello Vellante, Rosanna Scanu, Tamara Muratore, Mersia Gabrielli, 
+### Debora Tronci, Carmelo Masala, Donatella Rita Petretto
+### Bifactor structure of the schizotypal personality questionnaire (SPQ). Psychiatry Research, 2015, submitted.
+
+###    Principal Investigator of the study:
+###    Antonio Preti, M.D.
+###    Centro Medico Genneruxi
+###    Via Costantinopoli 42, 09129 Cagliari – Italy 
+###    e-mail: apreti@tin.it 
+
+### Cagliari (Italy), August 27, 2015.
+
+### The codes and the data are provided as free software, under the terms 
+### of the GNU General Public License as published by the Free Software Foundation, 
+### either version 3 of the License, or any later version.
+
+### This material is distributed in the hope that it will be useful,
+### but WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+### See the GNU General Public License for more details.
+### You can consult the GNU General Public License
+### at: http://www.gnu.org/licenses/.
+
+### Please, also consult the "General statement" for information on how to use and cut these codes.
+###################################################################################################################
+
+###################################################################################################################
+### you need R version 3.1.1 or higher
+### you need semPlot_1.0.0  
+### you need lavaan_0.5-18 
+
+require(foreign)
+require(psych)
+require(qgraph)
+require(lavaan)
+require(semTools)
+require(semPlot)
+require(MuMIn)
+
+###################################################################################################################
+###
+### load the data
+### Files in csv from outside Europe can be uploaded with the library(foreign), using the "read.csv" command.
+### Files in csv from within Europe can be uploaded with the library(foreign), using the "read.csv2" command.
+###
+###################################################################################################################
+
+### The command "file.choose()" will open a window, 
+### allowing you to look for the file whatever its location 
+
+### Use strip.white = TRUE, to avoid that labels have extra space
+
+library(foreign)
+
+d <- read.csv2(file.choose(), header=TRUE, strip.white = TRUE)
+
+### inspect the dataset
+
+dim(d)
+
+### [1] 649  85
+
+head(d)
+
+str(d)
+
+### summary(d) ### It is not strictly necessary)
+
+### Select the dataset for the analysis.
+### No missing data in this dataset.
+### If you plan to use these codes on data with missing data
+### rows with missing data must be removed, 
+### since most analyses do not work with missing data.
+### To remove rows with missing data in your data (e.g., named 'mydata'), 
+### use the command: df.no.missing <- na.omit(mydata)
+
+dat <- d[,77:85] 
+
+
+### check the result of the operation
+
+dim(dat); head(dat); summary(dat)
+
+### attach the dataset for ease of use
+
+attach(dat)
+
+
+##################################################################################################
+###
+### Note on the dataset
+###
+##################################################################################################
+
+### The dataset includes information on sex and age of the participants
+### sex: males = m (n = 305), females = f (n = 344)
+### age is a continuous variable, from 19 to 38 years of age (mean = 24.27, SD = 3.49)
+
+### The dataset includes the 74 items of the SPQ in the same order as in the original scale
+### Items are indicated as SPQ1, SPQ2, ... SPQ74
+### 
+### The dataset includes the nine subscales, as a sum of their items
+### We used the following acronyms for the names of the subscales
+###
+### IR = Ideas of reference
+### ESA = Excessive social anxiety
+### MT = Odd beliefs or magical thinking
+### UPE = Unusual perceptual experiences 
+### OB = Odd or eccentric behaviors
+### NCF = No close friends
+### OS = Odd speech
+### CA = Constricted affect
+### S = Suspiciousness 
+
+
+
+
+##################################################################################################
+###
+### Density plot for the nine subscales of the SPQ in the whole sample
+### You may skip this 
+###
+##################################################################################################
+
+### define the colors
+
+library(RColorBrewer)
+
+# divergent palette
+
+rb.r <- brewer.pal(4,"Reds")
+rb.b <- brewer.pal(3,"Blues")
+rb.g <- brewer.pal(6,"Greens")
+
+### calculate density distribution of the subscales
+
+IR.d <- density(IR)
+ESA.d <- density(ESA)
+MT.d <- density(MT)
+UPE.d <- density(UPE)
+OB.d <- density(OB)
+NCF.d <- density(NCF)
+OS.d <- density(OS)
+CA.d <- density(CA)
+S.d <- density(S)
+
+
+### plot the data
+
+
+plot(IR.d,ylim=c(0,0.6), lwd=3, col = rb.r[1],
+	main="Density plot of Schizotypal Personality Questionnaire 
+	subscales in 649 participants")
+lines(ESA.d, lwd=3, col = rb.b[1])
+lines(MT.d, lwd=3, col = rb.r[2])
+lines(UPE.d, lwd=3, col = rb.r[3])
+lines(OB.d, lwd=3, col = rb.g[3])
+lines(NCF.d, lwd=3, col = rb.b[2])
+lines(OS.d, lwd=3, col = rb.g[6])
+lines(CA.d, lwd=3, col = rb.b[3])
+lines(S.d, lwd=3, col = rb.r[4])
+
+### add the mean for each subscale
+
+text(4, 0.59, "Mean for the subscales", cex = 1.5, col = "black")
+
+
+text(2.5, 0.53, "Cognitive-perceptual \n domain", cex = 0.8, col = "black")
+
+text(2.5, 0.47, paste("IR =", round(mean(IR),2)),  cex = 0.8, col = "black")
+text(2.5, 0.44, paste("MT =", round(mean(MT),2)),  cex = 0.8, col = "black")
+text(2.5, 0.41, paste("UPE =", round(mean(UPE),2)),  cex = 0.8, col = "black")
+text(2.5, 0.38, paste("S =", round(mean(S),2)),  cex = 0.8, col = "black")
+
+text(4, 0.53, "Interpersonal  \n domain", cex = 0.8, col = "black")
+
+text(4, 0.47, paste("ESA =", round(mean(ESA),2)),  cex = 0.8, col = "black")
+text(4, 0.44, paste("NCF =", round(mean(NCF),2)),  cex = 0.8, col = "black")
+text(4, 0.41, paste("CA =", round(mean(CA),2)),  cex = 0.8, col = "black")
+
+text(5.5, 0.53, "Disorganized \n domain", cex = 0.8, col = "black")
+
+text(5.5, 0.47, paste("OB =", round(mean(OB),2)),  cex = 0.8, col = "black")
+text(5.5, 0.44, paste("OS =", round(mean(OS),2)),  cex = 0.8, col = "black")
+
+### add legends
+### Added 'NA' and col = "white" to make space between groups of subscales
+
+legend("topright", legend =  c("IR", "MT", "UPE", "S", NA, "ESA", "NCF", "CA", NA, "OB", "OS"), lwd = 3, seg.len = 0.75, # gives the legend appropriate symbols (lines) and length
+		col = c(rb.r[1], rb.r[2], rb.r[3], rb.r[4], "white", rb.b[1], rb.b[2],  rb.b[3], "white", rb.g[3], rb.g[6]), # gives the legend lines the correct color
+		merge=TRUE,
+		x.intersp = .4, # define the distance, along the horizontal axis, between text and symbol; for the vertical axis the command is y.intersp = 'value'
+       		ncol = 1,
+       		cex = 1, bty="n")
+
+
+
+
+
+
+##################################################################################################
+###
+### Split data into training and test sets
+###
+##################################################################################################
+
+
+set.seed(10)
+
+db<-split(dat, sample(rep(1:2)))
+
+# You get two datasets
+
+dim(db$'1')
+dim(db$'2')
+
+dat1 <- db$'1'
+dat2 <- db$'2'
+
+dim(dat1)
+# head(dat1)
+
+dim(dat2)
+# head(dat2)
+
+### general statistics
+
+summary(dat1); summary(dat2)
+
+
+### comparison between the two dataset
+### You may skip this
+
+t.test(dat1$IR,dat2$IR)
+t.test(dat1$ESA,dat2$ESA)
+t.test(dat1$MT,dat2$MT)
+t.test(dat1$UPE,dat2$UPE)
+t.test(dat1$OB,dat2$OB)
+t.test(dat1$NCF,dat2$NCF)
+t.test(dat1$OS,dat2$OS)
+t.test(dat1$CA,dat2$CA)
+t.test(dat1$S,dat2$S)
+
+  
+##################################################################################################
+###
+### PCA in the training set (dat1)
+###
+##################################################################################################
+
+
+### renaming of the variables for easy plotting
+
+ratings<-dat1[,1:9]
+
+names(ratings)<-c(
+  "Ideas of reference",
+  "Excessive social anxiety",
+  "Odd beliefs or magical thinking",
+  "Unusual perceptual experiences",
+  "Odd or eccentric behavior",
+  "No close friend",
+  "Odd speech",
+  "Constricted affect",
+  "Suspiciousness"
+)
+
+
+### The command fa.parallel executes parallel analysis, which suggested 2 components
+
+library(psych)
+fa.parallel(ratings, fa="pc")
+
+
+### PCA model with two components
+### "promax" rotation was used, since the components are expected to be correlated
+###
+
+res.pca2.prom <- principal(ratings,nfactors=2,rotate="promax", scores=TRUE)
+res.pca2.prom
+
+
+### The solution with "varimax" rotation did not differ from the solution with "promax" rotation
+### See yourself
+res.pca2.var <- principal(ratings,nfactors=2,rotate="varimax", scores=TRUE)
+res.pca2.var
+
+
+
+##################################################################################################
+###
+### Graphic representation of the PCA solution in the training set 
+### (both the promax and the varimax solutions)
+### You may skip this
+###
+##################################################################################################
+
+### The plot shows that the promax solution allows a clearer separation of the factors
+### In the promax solution the suspiciousness subscale had a clearer load on the "positive symptoms" factors
+### than in the varimax solution
+
+library(qgraph)
+
+par(mfrow=c(1,2))
+
+g.promax <- qgraph(res.pca2.prom,layout="circle",rotation="promax",minimum=0.2, 
+cut=0.4,vsize=c(1.5,10),borders=FALSE,vTrans=200,title="SPQ PCA - promax solution",
+label.cex=0.9, labels=names(ratings), 
+       label.scale=FALSE, edge.labels = TRUE)
+
+
+g.varimax <- qgraph(res.pca2.var,layout="circle",rotation="varimax",minimum=0.2, 
+cut=0.4,vsize=c(1.5,10),borders=FALSE,vTrans=200,title="SPQ PCA - varimax solution",
+label.cex=0.9, labels=names(ratings), 
+       label.scale=FALSE, edge.labels = TRUE)
+
+par(mfrow=c(1,1))
+ 
+############################################################
+####
+#### biplot of the promax solution
+####
+############################################################
+
+biplot(res.pca2.prom, main="Biplot - SPQ: PCA with promax solution", cex=c(1/2, 0.8))
+
+
+############################################################
+####
+#### separation plot along the two components
+#### promax solution
+####
+############################################################
+
+labs.pca <- names(res.pca2.prom$communality)
+
+plot(res.pca2.prom,labels=labs.pca,xlim=c(-0.4,1),ylim=c(-0.4,1),cex=0.9)
+
+############################################################
+####
+#### Distribution of factor loadings in the two components
+#### promax solution
+####
+############################################################
+
+### rename the labels of the factors
+
+labs <- paste(c("IR", "ESA", "MT", "UPE", "OB", "NCF", "OS", "CA", "S"))
+
+### extract variance accounted for by principal components 1 and 2
+
+p <- print(res.pca2.prom, cutoff=0)
+
+pca1 <- round(p$Vaccounted[2],3) * 100
+
+pca2 <- round(p$Vaccounted[7],3) * 100
+
+### plot 
+
+par(mfcol = c (1,2))
+par(oma=c(0,0,1,0))
+
+barplot(res.pca2.prom$loadings[,1], xlab = expression(italic("Principal Component 1")), 
+	ylab = "Standardized factor loadings", names.arg = labs)
+
+mtext(paste0("Explained variance = ", pca1, "%"), line=+1)
+
+abline(h=0.45, col = "red", lty = 2, lwd=2)		### The red line marks the threshold of 0.45 = 20% item attributable variance
+
+
+barplot(res.pca2.prom$loadings[,2], xlab = expression(italic("Principal Component 2")), 
+	ylab = "Standardized factor loadings", names.arg = labs)
+
+mtext(paste0("Explained variance = ", pca2, "%"), line=+1)
+
+abline(h=0.45, col = "red", lty = 2, lwd=2)		### The red line marks the threshold of 0.45 = 20% item attributable variance
+
+
+mtext(expression(bold("Distribution of the factor loadings in the two principal components")),side=3,line=-1,cex=1.2,outer=TRUE)
+
+mtext(expression(bold("SPQ - PCA with promax two-factor solution")),side=3,line=-2,cex=1,outer=TRUE)
+
+mtext("The red line marks the threshold of 0.45 = 20% item attributable variance", side=1,line=-1,cex=1,outer=TRUE, col = "red")
+
+par(mfcol = c (1,1))
+
+
+
+### ----------------------------------------------------------------------------------------------------------------------------- ###
+###							SECOND DATASET (Test set)
+
+### ----------------------------------------------------------------------------------------------------------------------------- ###
+
+#######################################################################
+##
+## CFA of the two-component model in the test set (dat2)
+## Comparison with rival models
+##
+#######################################################################
+
+### Assign the data to a vector of convenience
+
+testset <-dat2[,1:9]
+
+# Check the result
+
+dim(testset)
+head(testset)
+
+
+####################################################################
+##### Call the library
+####################################################################
+
+library(lavaan)
+library(semTools)
+
+### Set seed for reproducibility
+
+set.seed(354)
+
+
+
+####################################################################
+##### Unifactorial model 
+####################################################################
+
+
+SPQModelUni<- 'GenSPQ =~ IR+ESA+MT+UPE+OB+NCF+OS+CA+S'
+
+fitSPQUni <- cfa(SPQModelUni, data=testset, estimator="ML")
+
+### summary and estimated reliability of the factors
+
+summary(fitSPQUni, fit.measures=TRUE, standardized=TRUE)
+
+
+reliability(fitSPQUni)
+
+
+### Check whether the model is identified
+
+### The script had been created by Yves Rosseel, the creator and maintainer of the 'lavaan' package (http://lavaan.ugent.be/)
+### The script had been posted on a forum about 'lavaan': https://groups.google.com/forum/#!msg/lavaan/lU8HjvUnq2Q/H68dAFp6FjQJ
+
+### The function is expected to be implemented in a future version of the 'lavaan' package
+### The script does not work in the earlier versions of the 'lavaan' package (those before the 0.5-16)
+
+### The method is based on: Bekker PA, Merckens A, Wansbeek TJ. Identification, Equivalent Models, and Computer Algebra. San Diego, CA: Academic Press, 1994.
+
+### Bekker, Merckens, and Wansbeek (1994) developed a software to check local identification based on the Wald Rank Rule (the rank of a Jacobian matrix). 
+### The test is based on the simplified Jacobian matrix of conventional simultaneous equation models. 
+### A necessary condition for identification is that J(B, T, X) [Jacobian matrix] has at least as many rows as it has columns.
+### The rank of the Jacobian matrix is compared to the number of free parameters in the factorial model. 
+### When the rank of the Jacobian matrix is different from the number of free parameters in the factorial model, the model is not identified. 
+
+### Get 'Jacobian' using an internal function
+### It is possible that the name of the function will change in the future
+
+JAC <- lavaan:::computeDelta(lavmodel=fitSPQUni@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+####################################################################
+##### Raine's three factor model
+####################################################################
+
+
+########## Correlated traits three-factor model ##########
+
+
+SPQ3Raine <- 'CognitivePerceptual =~ IR+MT+UPE+S
+InterpersonalDifficulties =~ ESA+NCF+CA+S
+Disorganization =~ OB+OS'
+
+
+fit3Raine_corr <- cfa(SPQ3Raine, data=testset, estimator="ML")
+
+### summary and estimated reliability of the factors
+
+summary(fit3Raine_corr, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fit3Raine_corr)
+
+
+### Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fit3Raine_corr@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+########## Second-order implementation of the three-factor model ##########
+
+SPQ3RaineSF<- 'CognitivePerceptual =~ IR+MT+UPE+S
+InterpersonalDifficulties =~ ESA+NCF+CA+S
+Disorganization =~ OB+OS
+Schizotypy =~ CognitivePerceptual+InterpersonalDifficulties+Disorganization'
+
+
+fit3Raine_SF <- cfa(SPQ3RaineSF, data=testset, estimator="ML")
+
+
+### summary and estimated reliability of the factors
+
+summary(fit3Raine_SF, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fit3Raine_SF)
+reliabilityL2(fit3Raine_SF, "Schizotypy")
+
+
+
+## Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fit3Raine_SF@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+########## Bifactor implementation of the three factors model ##########
+
+SPQ3RaineBIF<- 'GenSPQ =~ IR+ESA+MT+UPE+OB+NCF+OS+CA+S
+CognitivePerceptual =~ IR+MT+UPE+S
+InterpersonalDifficulties =~ ESA+NCF+CA+S
+Disorganization =~ OB+OS'
+
+
+fit3Raine_BIF <- cfa(SPQ3RaineBIF, data=testset, estimator="ML", orthogonal=TRUE)
+
+
+### summary and estimated reliability of the factors
+
+summary(fit3Raine_BIF, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fit3Raine_BIF)
+
+
+
+## Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fit3Raine_BIF@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+####################################################################
+#### Stefanis' four-factor model
+####################################################################
+
+
+########## Correlated traits four-factor model ##########
+
+SPQ4Stefanis<- 'Paranoid =~ IR+ESA+S
+Positive =~ MT+UPE
+Negative =~ NCF+CA+ESA+S
+Disorganization =~ OB+OS'
+
+
+fit4Stefanis_corr <- cfa(SPQ4Stefanis, data=testset, estimator="ML")
+
+
+### summary and estimated reliability of the factors
+
+summary(fit4Stefanis_corr, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fit4Stefanis_corr)
+
+
+
+## Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fit4Stefanis_corr@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+########## Second-order implementation of the four-factor model ##########
+
+SPQ4StefanisSF<- 'Paranoid =~ IR+ESA+S
+Positive =~ MT+UPE
+Negative =~ NCF+CA+ESA+S
+Disorganization =~ OB+OS
+Schizotypy =~ Paranoid+Positive+Negative+Disorganization'
+
+
+fit4Stefanis_SF <- cfa(SPQ4StefanisSF, data=testset, estimator="ML")
+
+
+### summary and estimated reliability of the factors
+
+summary(fit4Stefanis_SF, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fit4Stefanis_SF)
+reliabilityL2(fit4Stefanis_SF, "Schizotypy")
+
+
+
+## Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fit4Stefanis_SF@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+########## Bifactor implementation of the four-factor model ##########
+
+SPQ4StefanisBIF<-'GenSPQ =~ IR+ESA+MT+UPE+OB+NCF+OS+CA+S
+Paranoid =~ IR+ESA+S
+Positive =~ MT+UPE
+Negative =~ NCF+CA+ESA+S
+Disorganization =~ OB+OS'
+
+
+fit4Stefanis_BIF <- cfa(SPQ4StefanisBIF, data=testset, estimator="ML", orthogonal=TRUE)
+
+
+### summary and estimated reliability of the factors
+
+summary(fit4Stefanis_BIF, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fit4Stefanis_BIF)
+
+
+
+## Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fit4Stefanis_BIF@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+#####################################################################################
+##### Two-factor model as extracted by PCA under parallel analysis 
+#####################################################################################
+
+
+########## Correlated traits two-factor model ##########
+
+
+SPQModel2pc <- 'Positive_SPQ =~ IR+MT+UPE+OB+OS+S
+Negative_SPQ =~ ESA+NCF+CA'
+
+fitSPQ2pc <- cfa(SPQModel2pc, data=testset, estimator="ML")
+
+
+### summary and estimated reliability of the factors
+
+summary(fitSPQ2pc, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fitSPQ2pc)
+
+
+
+### Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fitSPQ2pc@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+########## Second-order implementation of the two-factor model ##########
+
+SPQModel2SF <- 'Positive_SPQ =~ IR+MT+UPE+OB+OS+S
+Negative_SPQ =~ ESA+NCF+CA
+Schizotypy =~Positive_SPQ+Negative_SPQ'
+
+fitSPQ2SF <- cfa(SPQModel2SF, data=testset, estimator="ML")
+
+
+### summary and estimated reliability of the factors
+
+summary(fitSPQ2SF, fit.measures=TRUE, standardized=TRUE)
+
+reliability(fitSPQ2SF)
+reliabilityL2(fitSPQ2SF, "Schizotypy")
+
+
+
+### Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fitSPQ2SF@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+########## Bifactor implementation of the two-factor model ##########
+
+SPQModel2Bif <- 'GenSPQ =~ IR+ESA+MT+UPE+OB+NCF+OS+CA+S
+Positive_SPQ =~ IR+MT+UPE+OB+OS+S
+Negative_SPQ =~ ESA+NCF+CA'
+
+fitSPQ2Bif <- cfa(SPQModel2Bif, data=testset, estimator="ML", orthogonal=TRUE)
+
+
+### summary and estimated reliability of the factors
+
+summary(fitSPQ2Bif, fit.measures=TRUE, standardized=TRUE)
+
+
+reliability(fitSPQ2Bif)
+
+
+
+### Check whether the model is identified
+
+JAC <- lavaan:::computeDelta(lavmodel=fitSPQ2Bif@Model)[[1]]
+
+### They should be equal, otherwise the model is unidentified
+
+ncol(JAC)
+qr(JAC)$rank 
+
+
+
+##########################################################################################################
+##########################################################################################################
+###
+### Extraction of the Akaike Weight of each model
+###
+##########################################################################################################
+##########################################################################################################
+
+
+
+### Call the library
+### To cite package ‘MuMIn’ in publications use:
+### Kamil Barton (2014). MuMIn: Multi-model inference. R package version 1.10.0. http://CRAN.R-project.org/package=MuMIn
+
+library(MuMIn)
+
+### Assign the data to a vector of convenience to simplify the calculus
+
+fit1 <- fitSPQUni  ### fit of the unidimensional model
+
+fit2 <- fitSPQ2pc  ### fit of the two-factor correlated model
+fit3 <- fitSPQ2SF  ### fit of the two-factor second-order model
+fit4 <- fitSPQ2Bif ### fit of the two-factor bifactor model
+
+fit5 <- fit3Raine_corr ### fit of the three-factor correlated model
+fit6 <- fit3Raine_SF   ### fit of the three-factor second-order model
+fit7 <- fit3Raine_BIF  ### fit of the three-factor bifactor model
+
+fit8 <- fit4Stefanis_corr ### fit of the four-factor correlated model
+fit9 <- fit4Stefanis_SF   ### fit of the four-factor second-order model
+fit10 <- fit4Stefanis_BIF ### fit of the four-factor bifactor model
+
+### Extraction of the Akaike Weight [Comparison is limited to homogeneous models]
+
+### Correlated traits model
+
+A.K.CORR <- Weights(AICc(fit2, fit5, fit8))
+
+### Second-order models
+
+A.K.SF <- Weights(AICc(fit3, fit6, fit9))
+
+### Bifactor models
+
+A.K.BIF <- Weights(AICc(fit4, fit7, fit10))
+
+
+### Round the results to four digits (the best model is the one with the highest Akaike Weight)
+### Order of comparison is: two-factor models, three-factor models, four-factor models
+
+round(A.K.CORR,4)
+round(A.K.SF,4)
+round(A.K.BIF,4)
+
+
+#### Plot the results
+
+labs <- paste(c("2-Fact. \n ", "3-Fact. \n Correlated traits", "4-Fact. \n ", "  ", 
+		"2-Fact. \n ", "3-Fact. \n Second-order", "4-Fact. \n ", "  ", 
+		"2-Fact. \n ", "3-Fact. \n Bifactor", "4-Fact. \n "))
+
+barplot(c(round(A.K.CORR,4),NA, round(A.K.SF,4),NA, round(A.K.BIF,4)), col="light blue", names.arg = labs, 
+		xlab = "Different implementations of the models", ylab = "Akaike Weight")
+
+
+##########################################################################################################
+##########################################################################################################
+###
+### Comparison by Satorra-Bentler Scaled Chi-Square
+###
+##########################################################################################################
+##########################################################################################################
+
+### Assign the data to a vector of convenience to simplify the calculus
+
+fit1 <- fitSPQUni  ### fit of the unidimensional model
+
+fit2 <- fitSPQ2pc  ### fit of the two-factor correlated model
+fit3 <- fitSPQ2SF  ### fit of the two-factor second-order model
+fit4 <- fitSPQ2Bif ### fit of the two-factor bifactor model
+
+fit5 <- fit3Raine_corr ### fit of the three-factor correlated model
+fit6 <- fit3Raine_SF   ### fit of the three-factor second-order model
+fit7 <- fit3Raine_BIF  ### fit of the three-factor bifactor model
+
+fit8 <- fit4Stefanis_corr ### fit of the four-factor correlated model
+fit9 <- fit4Stefanis_SF   ### fit of the four-factor second-order model
+fit10 <- fit4Stefanis_BIF ### fit of the four-factor bifactor model
+
+
+
+### Comparison of the different implementations of the two-factor models 
+
+anova(fit2,fit3, method = "satorra.bentler.2010"); anova(fit2,fit4, method = "satorra.bentler.2010"); anova(fit3,fit4, method = "satorra.bentler.2010")
+
+### Comparison of the different implementations of the three-factor models
+
+anova(fit5,fit6, method = "satorra.bentler.2010"); anova(fit5,fit7, method = "satorra.bentler.2010"); anova(fit6,fit7, method = "satorra.bentler.2010")
+
+### Comparison of the different implementations of the four-factor models 
+
+anova(fit8,fit9, method = "satorra.bentler.2010"); anova(fit8,fit10, method = "satorra.bentler.2010"); anova(fit9,fit10, method = "satorra.bentler.2010")
+
+### However, the 'anova' command compares nested models, and some of these models are not nested
+### Better comparison is by AIC and BIC
+
+
+
+##########################################################################################################
+###
+### Model comparison with AIC
+###
+##########################################################################################################
+
+### Assign the data to a vector of convenience to simplify the plotting
+
+aic1 <- AIC(fitSPQUni)  ### fit of the unidimensional model
+
+aic2 <- AIC(fitSPQ2pc)  ### fit of the two-factor correlated model
+aic3 <- AIC(fitSPQ2SF)  ### fit of the two-factor second-order model
+aic4 <- AIC(fitSPQ2Bif) ### fit of the two-factor bifactor model
+
+aic5 <- AIC(fit3Raine_corr) ### fit of the three-factor correlated model
+aic6 <- AIC(fit3Raine_SF)   ### fit of the three-factor second-order model
+aic7 <- AIC(fit3Raine_BIF)  ### fit of the three-factor bifactor model
+
+aic8 <- AIC(fit4Stefanis_corr) ### fit of the four-factor correlated model
+aic9 <- AIC(fit4Stefanis_SF)   ### fit of the four-factor second-order model
+aic10 <- AIC(fit4Stefanis_BIF) ### fit of the four-factor bifactor model
+
+data.aic <- cbind(aic1,aic2,aic3,aic4,aic5,aic6,aic7,aic8,aic9,aic10)
+
+
+############# Plot the resuls
+
+barplot(data.aic, log="x", col="light blue", las=2, cex.names=0.75, horiz=TRUE,names.arg=c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+    			xlab="AIC")
+
+text(10100,0.8,"Unidimensional model", cex=0.75, font=2)
+
+text(10100,2,"2-factor correlated model", cex=0.75, font=2)
+text(10100,3.2,"2-factor second-order model", cex=0.75, font=2)
+text(10100,4.4,"2-factor bifactor model", cex=0.75, font=2)
+
+text(10100,5.6,"3-factor correlated model", cex=0.75, font=2)
+text(10100,6.8,"3-factor second-order model", cex=0.75, font=2)
+text(10100,8,"3-factor bifactor model", cex=0.75, font=2)
+
+text(10100,9.2,"4-factor correlated model", cex=0.75, font=2)
+text(10100,10.4,"4-factor second-order model", cex=0.75, font=2)
+text(10100,11.6,"4-factor bifactor model", cex=0.75, font=2)
+
+abline(v=min(data.aic), col = "red", lwd=3)
+
+
+
+##########################################################################################################
+###
+### Model comparison with BIC
+###
+##########################################################################################################
+
+### Assign the data to a vector of convenience to simplify the plotting
+
+bic1 <- BIC(fitSPQUni)  ### fit of the unidimensional model
+
+bic2 <- BIC(fitSPQ2pc)  ### fit of the two-factor correlated model
+bic3 <- BIC(fitSPQ2SF)  ### fit of the two-factor second-order model
+bic4 <- BIC(fitSPQ2Bif) ### fit of the two-factor bifactor model
+
+bic5 <- BIC(fit3Raine_corr) ### fit of the three-factor correlated model
+bic6 <- BIC(fit3Raine_SF)   ### fit of the three-factor second-order model
+bic7 <- BIC(fit3Raine_BIF)  ### fit of the three-factor bifactor model
+
+bic8 <- BIC(fit4Stefanis_corr) ### fit of the four-factor correlated model
+bic9 <- BIC(fit4Stefanis_SF)   ### fit of the four-factor second-order model
+bic10 <- BIC(fit4Stefanis_BIF) ### fit of the four-factor bifactor model
+
+data.bic <- cbind(bic1,bic2,bic3,bic4,bic5,bic6,bic7,bic8,bic9,bic10)
+
+
+############# Plot the results
+
+barplot(data.bic, log="x", col="light blue", las=2, cex.names=0.75, horiz=TRUE,names.arg=c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+    			xlab="BIC")
+
+text(10100,0.8,"Unidimensional model", cex=0.75, font=2)
+
+text(10100,2,"2-factor correlated model", cex=0.75, font=2)
+text(10100,3.2,"2-factor second-order model", cex=0.75, font=2)
+text(10100,4.4,"2-factor bifactor model", cex=0.75, font=2)
+
+text(10100,5.6,"3-factor correlated model", cex=0.75, font=2)
+text(10100,6.8,"3-factor second-order model", cex=0.75, font=2)
+text(10100,8,"3-factor bifactor model", cex=0.75, font=2)
+
+text(10100,9.2,"4-factor correlated model", cex=0.75, font=2)
+text(10100,10.4,"4-factor second-order model", cex=0.75, font=2)
+text(10100,11.6,"4-factor bifactor model", cex=0.75, font=2)
+
+abline(v=min(data.bic), col = "red", lwd=3)
+
+
+##########################################################################################################
+################## Combining plots ################## 
+##########################################################################################################
+
+par(mfrow=c(1,2))
+
+
+#### AIC
+
+
+barplot(data.aic, log="x", col="light blue", las=2, cex.names=0.75, horiz=TRUE,names.arg=c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+    			xlab="AIC")
+
+text(10100,0.8,"Unidimensional model", cex=0.75, font=2)
+
+text(10100,2,"2-factor correlated model", cex=0.75, font=2)
+text(10100,3.2,"2-factor second-order model", cex=0.75, font=2)
+text(10100,4.4,"2-factor bifactor model", cex=0.75, font=2)
+
+text(10100,5.6,"3-factor correlated model", cex=0.75, font=2)
+text(10100,6.8,"3-factor second-order model", cex=0.75, font=2)
+text(10100,8,"3-factor bifactor model", cex=0.75, font=2)
+
+text(10100,9.2,"4-factor correlated model", cex=0.75, font=2)
+text(10100,10.4,"4-factor second-order model", cex=0.75, font=2)
+text(10100,11.6,"4-factor bifactor model", cex=0.75, font=2)
+
+abline(v=min(data.aic), col = "red", lwd=3)
+
+
+
+#### BIC
+
+
+barplot(data.bic, log="x", col="light blue", las=2, cex.names=0.75, horiz=TRUE,names.arg=c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+    			xlab="BIC")
+
+text(10100,0.8,"Unidimensional model", cex=0.75, font=2)
+
+text(10100,2,"2-factor correlated model", cex=0.75, font=2)
+text(10100,3.2,"2-factor second-order model", cex=0.75, font=2)
+text(10100,4.4,"2-factor bifactor model", cex=0.75, font=2)
+
+text(10100,5.6,"3-factor correlated model", cex=0.75, font=2)
+text(10100,6.8,"3-factor second-order model", cex=0.75, font=2)
+text(10100,8,"3-factor bifactor model", cex=0.75, font=2)
+
+text(10100,9.2,"4-factor correlated model", cex=0.75, font=2)
+text(10100,10.4,"4-factor second-order model", cex=0.75, font=2)
+text(10100,11.6,"4-factor bifactor model", cex=0.75, font=2)
+
+abline(v=min(data.bic), col = "red", lwd=3)
+
+### done
+
+##########################################################################################################
+
+
+##########################################################################################################
+################## 
+################## All information criteria in a single plot 
+##################
+##########################################################################################################
+
+
+
+### modified layout
+
+matrix(c(1, 2, 3, 3), 2, 2, byrow=TRUE)
+layout(matrix(c(1, 2, 3, 3), 2, 2, byrow=TRUE))
+layout.show(3)
+
+
+#### AIC
+
+
+barplot(data.aic, log="x", col="light blue", las=2, cex.names=0.75, horiz=TRUE,names.arg=c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+    			main="AIC")
+
+text(10100,0.8,"Unidimensional model", cex=0.75, font=2)
+
+text(10100,2,"2-factor correlated model", cex=0.75, font=2)
+text(10100,3.2,"2-factor second-order model", cex=0.75, font=2)
+text(10100,4.4,"2-factor bifactor model", cex=0.75, font=2)
+
+text(10100,5.6,"3-factor correlated model", cex=0.75, font=2)
+text(10100,6.8,"3-factor second-order model", cex=0.75, font=2)
+text(10100,8,"3-factor bifactor model", cex=0.75, font=2)
+
+text(10100,9.2,"4-factor correlated model", cex=0.75, font=2)
+text(10100,10.4,"4-factor second-order model", cex=0.75, font=2)
+text(10100,11.6,"4-factor bifactor model", cex=0.75, font=2)
+
+abline(v=min(data.aic), col = "red", lwd=3)
+
+
+
+#### BIC
+
+
+barplot(data.bic, log="x", col="light blue", las=2, cex.names=0.75, horiz=TRUE,names.arg=c(NA,NA,NA,NA,NA,NA,NA,NA,NA,NA),
+    			main="BIC")
+
+text(10200,0.8,"Unidimensional model", cex=0.75, font=2)
+
+text(10200,2,"2-factor correlated model", cex=0.75, font=2)
+text(10200,3.2,"2-factor second-order model", cex=0.75, font=2)
+text(10200,4.4,"2-factor bifactor model", cex=0.75, font=2)
+
+text(10200,5.6,"3-factor correlated model", cex=0.75, font=2)
+text(10200,6.8,"3-factor second-order model", cex=0.75, font=2)
+text(10200,8,"3-factor bifactor model", cex=0.75, font=2)
+
+text(10200,9.2,"4-factor correlated model", cex=0.75, font=2)
+text(10200,10.4,"4-factor second-order model", cex=0.75, font=2)
+text(10200,11.6,"4-factor bifactor model", cex=0.75, font=2)
+
+abline(v=min(data.bic), col = "red", lwd=3)
+
+
+#### Akaike weight
+
+
+labs <- paste(c("2-Fact. \n ", "3-Fact. \n Correlated traits", "4-Fact. \n ", "  ", 
+		"2-Fact. \n ", "3-Fact. \n Second-order", "4-Fact. \n ", "  ", 
+		"2-Fact. \n ", "3-Fact. \n Bifactor", "4-Fact. \n "))
+
+barplot(c(round(A.K.CORR,4),NA, round(A.K.SF,4),NA, round(A.K.BIF,4)), col="light blue", names.arg = labs, 
+		xlab = "Different implementations of the models", main = "Akaike Weight")
+
+### done
+## after saving, dev.off()
+
+##########################################################################################################
+
+
+
+
+#############################################
+#### R-squared for the best models
+#############################################
+
+### The Item R-squared is the square of the correlation between the item and the factor
+### It is the percentage of the variance in the factor that can be accounted for by the item
+### It can be also considered as an estimate of the indicator's reliability
+### that is, the proportion of the indicator's variance that is estimated to be true-score variance
+### Values above 0.40 are expected
+
+inspect(fit4, 'r2')	### 2-factor bifactor model
+
+inspect(fit8, 'r2')	### 4-factor correlated model
+
+
+
+##########################################################################################################
+################## 
+################## Plot of the best model(s) 
+##################
+##########################################################################################################
+
+library("semPlot")
+
+### Assign the data to a vector of convenience to simplify the calculus
+
+
+fit4 <- fitSPQ2Bif ### fit of the two-factor bifactor model
+
+fit8 <- fit4Stefanis_corr ### fit of the four-factor correlated model
+
+
+########## 2-factor bifactor model ##########
+
+myplot <- semPaths(fit4, whatLabels = "est", style = "lisrel", residuals = TRUE)
+
+### done
+
+# Standardized parameters
+
+semPaths(fit4, "std", edge.label.cex = 0.9, curvePivot = TRUE)
+
+
+########## 4-factor correlated model ##########
+
+myplot <- semPaths(fit8, whatLabels = "est", style = "lisrel", residuals = TRUE)
+
+### done
+
+# Standardized parameters
+
+semPaths(fit8, "std", edge.label.cex = 0.9, curvePivot = TRUE)
+
+
+
+##################################################################################################
+###
+### plot path diagram with standardized coefficients
+###
+##################################################################################################
+
+
+########## 2-factor bifactor model ##########
+
+semPaths(fit4, intercepts = FALSE, residuals = TRUE, style="mx", layout="tree", rotation=1, what = "std",
+         optimizeLatRes=TRUE, whatLabels = "std", sizeLat = 10, sizeLat2=8, sizeMan=10, sizeMan2=8)
+
+########## 4-factor correlated model ##########
+
+semPaths(fit8, intercepts = FALSE, residuals = TRUE, style="mx", layout="tree", rotation=1, what = "std",
+         optimizeLatRes=TRUE, whatLabels = "std", sizeLat = 10, sizeLat2=8, sizeMan=10, sizeMan2=8)
+
+##################################################################################################
+###
+### Model improvement (which we did not apply, since we did not consider it necessary to proceed further)
+###
+##################################################################################################
+
+### Based on Jeromy Anglin's Lavaan cheat sheet
+### http://jeromyanglim.tumblr.com/post/33556941601/lavaan-cheat-sheet
+
+### Modification indices 	
+
+mod_ind <- modificationindices(fit4)
+
+### 10 greatest 	
+
+head(mod_ind[order(mod_ind$mi, decreasing=TRUE), ], 10)
+
+#### mi > 5 	(conventional threshold, with many items, 10 is a better threshold)
+
+subset(mod_ind[order(mod_ind$mi, decreasing=TRUE), ], mi > 5)
+
+#### To see only the modification indices for the factor loadings
+
+mi.fact <- mod_ind[mod_ind$op == "=~",]
+
+head(mi.fact[order(mi.fact$mi, decreasing=TRUE), ], 10)
+
+
+##################################################################################################
+###
+###  Residuals of a fitted model.
+###
+##################################################################################################
+
+### Comparison between the two best models
+
+### This is simply the difference between the observed and the implied covariance matrix and mean vector.
+### You may observe several NA values, but they can be safely ignored.
+
+### A significant standardized residual covariance is one with an absolute value greater than 2.58
+
+
+### paired plots
+
+par(mfrow=c(1,2))
+
+########## 2-factor bifactor model ##########
+
+res.4 <- resid(fit4, type = "standardized")
+
+### Exclude correlation of the factor with itself
+### This command will transform the "1" of the correlation of the factor with itself into missing data (NA)
+
+boxplot(res.4$cov, main = "Bifactor implementation of the two-factor model")
+abline(h=2.58,col="red", lwd=2)
+abline(h=-2.58,col="red", lwd=2)
+
+########## 4-factor correlated model ##########
+
+res.8 <- resid(fit8, type = "standardized")
+
+
+boxplot(res.8$cov, main = "Correlated traits four factor model")
+abline(h=2.58,col="red", lwd=2)
+abline(h=-2.58,col="red", lwd=2)

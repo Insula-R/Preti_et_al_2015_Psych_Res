@@ -1,0 +1,108 @@
+################################################################################################
+###										       ###
+### ----------------------------------- General statement ---------------------------------- ###
+###											   ###
+################################################################################################
+
+----------------------------------------------------------------------------------------------------------------------------------------
+### This materials is provided to the aims of reproducibility and replicability of the findings reported in the paper:
+
+### Antonio Preti, Sara Siddi, Marcello Vellante, Rosanna Scanu, Tamara Muratore, Mersia Gabrielli, 
+### Debora Tronci, Carmelo Masala, Donatella Rita Petretto
+### Bifactor structure of the schizotypal personality questionnaire (SPQ). Psychiatry Research, 2015, submitted.
+----------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------------------
+### "Reproducibility is defined as the ability to recompute data analytic results, given an observed data set 
+### and knowledge of the data analysis pipeline".
+### Roger Peng.The reproducibility crisis in science: A statistical counterattack.Significance, 2015; 12: 30-32.
+### DOI: 10.1111/j.1740-9713.2015.00827.x.
+
+### "The replicability of a study is related to the chance that an independent experiment targeting the 
+### same scientific question will produce a result consistent with the original study".
+### Roger Peng.The reproducibility crisis in science: A statistical counterattack.Significance, 2015; 12: 30-32.
+### DOI: 10.1111/j.1740-9713.2015.00827.x.
+
+### Reproducibility favors the endeavor of replicability, but it is indpendent from it.
+### Essentially, being able to reproduce the results of the analyses of a study
+### allows you to clearly understand its implications. 
+### However, you may decide to replicate a study by using other models to analyse your data.
+
+### "There are two major components to a reproducible study: 
+### that the raw data from the experiment are available; 
+### and that the statistical code 
+### and documentation to reproduce the analysis are also available".
+### Roger Peng.The reproducibility crisis in science: A statistical counterattack.Significance, 2015; 12: 30-32.
+### DOI: 10.1111/j.1740-9713.2015.00827.x.
+----------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------------------
+### For this reasons, we have decided to make available the raw data 
+### and the statistical code used to perform the analyses described in the paper.
+### The documentation to reproduce the analysis is also available.
+
+### The codes and the data are provided as free software, under the terms 
+### of the GNU General Public License as published by the Free Software Foundation, 
+### either version 3 of the License, or any later version.
+
+### This material is distributed in the hope that it will be useful,
+### but WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+### See the GNU General Public License for more details.
+### You can consult the GNU General Public License
+### at: http://www.gnu.org/licenses/.
+----------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------------------
+### In using this material, you are expected to follow these rules:
+
+### 1. If you use the data for purposes that respond to the same or related aims of the study to which they belong
+###    (in this case, the determination of the factor structure of the SPQ),
+###    you are expected to involve the principal investigator of the study as co-author
+###    and to share with him/her your analyses and conclusions.
+
+### 2. If you use the data for purposes that respond to different aims of those of the study
+###    (e.g., to test a statistical model of your own creation),
+###    you are expected to cite the article related to the data you are using
+###    ad as well cite the repository from which you downloaded the data.
+###    There is no need you inform the principal investigator of the study,
+###    or involve him/her as co-author.
+
+### 3. If during the reanalysis of the data you find an error in the codes, 
+###    or claim some mistake was done in the analysis of the data, 
+###    you are expected to inform the principal investigator of the study.
+###    If you decide to publish a paper on the claimed error or mistake,
+###    you are expected to inform the principal investigator of the study,
+###    but you are not obliged to involve him/her as co-author
+###    (indeed, it would be awkward for him/her to share the co-authorship
+###    of an article that is contrary to his/her own study's conclusions).
+###    However, you are expected to cite the article related to the data you are using
+###    ad as well cite the repository from which you downloaded the data.
+###    Moreover, since you are using publicly available data and codes,
+###    you are expected to provide all set of codes you used to make your claim,
+###    so independent researchers could evaluate the correctness of your analyses.
+
+### 4. If you use the codes for your own analysis of data that are fitted for this purpose
+###    you are expected to cite the article related to the data you are using
+###    and as well to cite the repository from which you downloaded the data.
+###    There is no need you inform the principal investigator of the study,
+###    or involve him/her as co-author.
+
+### 5. If you use some section of the codes (e.g., a particular solution for plotting some data),
+###    there is no need you inform the principal investigator of the study,
+###    or involve him/her as co-author. Also, you are not obliged to cite
+###    the article related to the codes you are using
+###    or to cite the repository from which you downloaded the codes.
+###    However, as a courtesy to the author(s), you may cite 
+###    the repository from which you downloaded the codes.
+----------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
+###    Principal Investigator of the study:
+###    Antonio Preti, M.D.
+###    Centro Medico Genneruxi
+###    Via Costantinopoli 42, 09129 Cagliari – Italy 
+###    e-mail: apreti@tin.it 
+
+### Cagliari (Italy), August 27, 2015.
+----------------------------------------------------------------------------------------------------------------------------------------

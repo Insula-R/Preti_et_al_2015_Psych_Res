@@ -1,0 +1,293 @@
+### Codes for the item-level confirmatory factor analysis (CFA)
+
+###################################################################################################################
+### This material is provided to the aims of reproducibility and replicability of the findings reported in the paper:
+
+### Antonio Preti, Sara Siddi, Marcello Vellante, Rosanna Scanu, Tamara Muratore, Mersia Gabrielli, 
+### Debora Tronci, Carmelo Masala, Donatella Rita Petretto
+### Bifactor structure of the schizotypal personality questionnaire (SPQ). Psychiatry Research, 2015, submitted.
+
+###    Principal Investigator of the study:
+###    Antonio Preti, M.D.
+###    Centro Medico Genneruxi
+###    Via Costantinopoli 42, 09129 Cagliari – Italy 
+###    e-mail: apreti@tin.it 
+
+### Cagliari (Italy), August 27, 2015.
+
+### The codes and the data are provided as free software, under the terms 
+### of the GNU General Public License as published by the Free Software Foundation, 
+### either version 3 of the License, or any later version.
+
+### This material is distributed in the hope that it will be useful,
+### but WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+### See the GNU General Public License for more details.
+### You can consult the GNU General Public License
+### at: http://www.gnu.org/licenses/.
+
+### Please, also consult the "General statement" for information on how to use and cut these codes.
+###################################################################################################################
+
+
+
+###################################################################################################################
+### This is a test to see whether the allocation of the items to the expected nine subscales 
+### yields an independent sample
+###################################################################################################################
+
+### you need R version 3.1.1 or higher
+### you need semPlot_1.0.0  
+### you need lavaan_0.5-18 
+
+require(foreign)
+require(lavaan)
+require(semTools)
+require(semPlot)
+
+###################################################################################################################
+###
+### load the data
+### Files in csv from outside Europe can be uploaded with the library(foreign), using the "read.csv" command.
+### Files in csv from within Europe can be uploaded with the library(foreign), using the "read.csv2" command.
+###
+###################################################################################################################
+
+### The command "file.choose()" will open a window, 
+### allowing you to look for the file whatever its location
+
+### Use strip.white = TRUE, to avoid that labels have extra space
+
+library(foreign)
+
+d <- read.csv2(file.choose(), header=TRUE, strip.white = TRUE)
+
+### inspect the dataset
+
+dim(d)
+
+### [1] 649  85
+
+head(d)
+
+str(d)
+
+### summary(d) ### It is not strictly necessary)
+
+### select the dataset for the analysis
+
+dat <- d[,3:76] 
+
+
+### check the result of the operation
+
+dim(dat); head(dat)
+
+### attach the dataset for ease of use
+
+attach(dat)
+
+
+##################################################################################################
+###
+### Note on the dataset
+###
+##################################################################################################
+
+### The dataset includes information on sex and age of the participants
+### sex: males = m (n° = 305), females = f (n° = 344)
+### age is a continuous variable, from 19 to 38 years of age (mean = 24.27, SD = 3.49)
+
+### The dataset includes the 74 items of the SPQ in the same order as in the original scale
+### Items are indicated as SPQ1, SPQ2, ... SPQ74
+### 
+### The dataset includes the nine subscales, as a sum of their items
+### We used the following acronyms for the names of the subscales
+###
+### IR = Ideas of reference
+### ESA = Excessive social anxiety
+### MT = Odd beliefs or magical thinking
+### UPE = Unusual perceptual experiences 
+### OB = Odd or eccentric behaviors
+### NCF = No close friends
+### OS = Odd speech
+### CA = Constricted affect
+### S = Suspiciousness 
+
+
+##################################################################################################
+###
+### item-level confirmatory factor analysis (CFA) of the nine subscales structure of 74-item SPQ
+###
+##################################################################################################
+
+### Please, if you do not have experience with the "lavaan" package
+### you are invited to consult the package site at http://lavaan.ugent.be/tutorial/
+
+
+library(lavaan)
+library(semTools)
+
+### The structural model
+### The items are assigned to the proper subscale
+### We follow the good rule of leaving a space between each vector/sign
+### This <- means that the model has been assigned to its vector (SPQ9)
+### This =~ means that the items have been assigned to the factor
+### The model is placed within quotation marks (')
+
+SPQ9 <- 'IR =~ SPQ1 + SPQ10 + SPQ19 + SPQ28 + SPQ37 + SPQ45 + SPQ53 + SPQ60 + SPQ63
+ESA =~ SPQ2 + SPQ11 + SPQ20 + SPQ29 + SPQ38 + SPQ46 + SPQ54 + SPQ71
+MT =~ SPQ3 + SPQ12 + SPQ21 + SPQ30 + SPQ39 + SPQ47 + SPQ55
+UPE =~ SPQ4 + SPQ13 + SPQ22 + SPQ31 + SPQ40 + SPQ48 + SPQ56 + SPQ61 + SPQ64
+OB =~ SPQ5 + SPQ14 + SPQ23 + SPQ32 + SPQ67 + SPQ70 + SPQ74
+NCF =~ SPQ6 + SPQ15 + SPQ24 + SPQ33 + SPQ41 + SPQ49 + SPQ57 + SPQ62 + SPQ66
+OS =~ SPQ7 + SPQ16 + SPQ25 + SPQ34 + SPQ42 + SPQ50 + SPQ58 + SPQ69 + SPQ72
+CA =~ SPQ8 + SPQ17 + SPQ26 + SPQ35 + SPQ43 + SPQ51 + SPQ68 + SPQ73
+S =~ SPQ9 + SPQ18 + SPQ27 + SPQ36 + SPQ44 + SPQ52 + SPQ59 + SPQ65'	### closing quotation mark
+
+
+### Specify the CFA measurement model
+### The lavaan 0.5 series can deal with binary and ordinal (but not nominal) endogenous variables.
+### You need to declare the variables as "ordered"
+### You need to order the variables by their names in the same exact order as in the structural model
+### otherwise you will have measurement errors
+
+### In case you have a measurement model with factors that are specified by variables from 1 to n,
+### to avoid having to type the main label of the variable (var) n times, 
+### you can use this command: ordered=paste("var",1:n,sep="")
+### You need to specify this subcommand: sep=""
+### This subcommand sticks the number (from 1 to n) to the main label of the variable ("var", in the example").
+### We devised the structural model by maintaining the order of the variables as in the questionnaire
+### so we had to specify the order of the variables as in the structural model, one by one.
+
+### "fit" is the vector that specifies the lavaan class, which represents a (fitted) latent variable model. 
+### It contains a description of the model as specified by the user, 
+### a summary of the data, an internal matrix representation, and if the model was fitted, the fitting results. 
+
+### The "ordered" command forces the measurement to use the robust "DWLS" estimator
+
+### CAUTION: this takes a lot of time! 
+### Up to three/four hours, depending on the efficiency of your laptop
+
+### START: 15,38 --> END: 20.30 in the replication
+### R version 3.1.1 (2014-07-10) - Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+
+
+fit <- cfa(SPQ9, data=dat, ordered=c("SPQ1", "SPQ10", "SPQ19", "SPQ28", "SPQ37", "SPQ45", "SPQ53", "SPQ60", "SPQ63",
+					"SPQ2", "SPQ11", "SPQ20", "SPQ29", "SPQ38", "SPQ46", "SPQ54", "SPQ71",
+					"SPQ3", "SPQ12", "SPQ21", "SPQ30", "SPQ39", "SPQ47", "SPQ55",
+					"SPQ4", "SPQ13", "SPQ22", "SPQ31", "SPQ40", "SPQ48", "SPQ56", "SPQ61", "SPQ64",
+					"SPQ5", "SPQ14", "SPQ23", "SPQ32", "SPQ67", "SPQ70", "SPQ74",
+					"SPQ6", "SPQ15", "SPQ24", "SPQ33", "SPQ41", "SPQ49", "SPQ57", "SPQ62", "SPQ66",
+					"SPQ7", "SPQ16", "SPQ25", "SPQ34", "SPQ42", "SPQ50", "SPQ58", "SPQ69", "SPQ72",
+					"SPQ8", "SPQ17", "SPQ26", "SPQ35", "SPQ43", "SPQ51", "SPQ68", "SPQ73",
+					"SPQ9", "SPQ18", "SPQ27", "SPQ36", "SPQ44", "SPQ52", "SPQ59", "SPQ65"))
+
+
+##################################################################################################
+###
+### Call the summary of the fitting results
+### If fit.measures=TRUE, the chi-square statistics are supplemented by several fit measures.
+###  If standardized=TRUE, the standardized solution is also printed
+### It may take some time
+###
+##################################################################################################
+
+summary(fit, fit.measures=TRUE, standardized=TRUE)
+
+
+### Factor correlation matrix
+
+cov2cor(inspect(fit, "coefficients")$psi)
+
+
+### additional inspection (the tetrachoric matrix, among others)
+
+inspect(fit, "sampstat")
+
+
+### Estimated reliability of the nine subscales as fitted in the model
+### This is a command from the package "semTools"
+
+reliability(fit)
+
+
+##################################################################################################
+###
+### Plot the model (not really helpful, too big)
+###
+##################################################################################################
+
+library(semPlot)
+
+semPaths(fit, "std", edge.label.cex = 0.5, curvePivot = TRUE)
+
+### alternative
+
+semPaths(fit, "std", residuals=TRUE)
+
+### lisrel style
+
+semPaths(fit,whatLabels="est",style="lisrel", residuals=TRUE, optimizeLatRes=TRUE)
+
+### "circle" representation (more readable)
+
+semPaths(fit, "std", residuals=TRUE, layout="circle2", optimizeLatRes=TRUE)
+
+
+##################################################################################################
+###
+### Model improvement (which we did not apply, since we did not consider it necessary to proceed further)
+###
+##################################################################################################
+
+### Based on Jeromy Anglin's Lavaan cheat sheet
+### http://jeromyanglim.tumblr.com/post/33556941601/lavaan-cheat-sheet
+
+### Modification indices 	
+
+mod_ind <- modificationindices(fit)
+
+### 10 greatest ones	
+
+head(mod_ind[order(mod_ind$mi, decreasing=TRUE), ], 10)
+
+#### mi > 5 	(conventional threshold, with many items, 10 is a better threshold)
+
+subset(mod_ind[order(mod_ind$mi, decreasing=TRUE), ], mi > 5)
+
+
+
+
+##################################################################################################
+###
+### Additional inspection of the correlation between factors
+###
+##################################################################################################
+
+cor.f <- cov2cor(inspect(fit, "coefficients")$psi)
+
+### Exclude correlation of the factor with itself
+### This command will transform the "1" of the correlation of the factor with itself into missing data (NA)
+
+cor.f[cor.f==1] <- NA
+
+### plot the data
+
+boxplot(cor.f, col = "gold", main = "Distribution of correlations between factors by factors")
+abline(h = median(cor.f, na.rm=TRUE), lwd = 3, col = "red")	### This includes the median as a red line
+								### the "na.rm=TRUE" allows calculating the median in the presence of missing data (NA)
+
+legend("topright", legend = "Median", text.col = "red", 
+		lwd = 3, lty = 1, col = "red", seg.len = 0.75, pch = NA, 	### pch = NA allows the line to be plotted without the box 
+		merge=TRUE,		## Defaults to TRUE if there are points and lines in the legend
+		x.intersp = .4, # define the distance, along the horizontal axis, between text and symbol
+		 bty="n")
+
+### It is evident that IR, UPE, OS and S have correlations above the median in the matrix
+### ESA, NCF, MT and CA have correlations below the median in the matrix
+### OB is on the median, but most values are below it
+
+
