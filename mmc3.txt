@@ -10,7 +10,7 @@
 ###    Principal Investigator of the study:
 ###    Antonio Preti, M.D.
 ###    Centro Medico Genneruxi
-###    Via Costantinopoli 42, 09129 Cagliari – Italy 
+###    Via Costantinopoli 42, 09129 Cagliari â€“ Italy 
 ###    e-mail: apreti@tin.it 
 
 ### Cagliari (Italy), August 27, 2015.
@@ -123,6 +123,3 @@ names <- c("", "", "IF", "", "", "MT","", "", "UPE", "", "Pos","OB", "2nd Order"
  par(mfrow = c(1, 1))
 
 ### after saving, dev.off()
-
-
-
