@@ -11,7 +11,7 @@
 ###    Principal Investigator of the study:
 ###    Antonio Preti, M.D.
 ###    Centro Medico Genneruxi
-###    Via Costantinopoli 42, 09129 Cagliari – Italy 
+###    Via Costantinopoli 42, 09129 Cagliari â€“ Italy 
 ###    e-mail: apreti@tin.it 
 
 ### Cagliari (Italy), August 27, 2015.
@@ -765,7 +765,7 @@ qr(JAC)$rank
 
 
 ### Call the library
-### To cite package ‘MuMIn’ in publications use:
+### To cite package â€˜MuMInâ€™ in publications use:
 ### Kamil Barton (2014). MuMIn: Multi-model inference. R package version 1.10.0. http://CRAN.R-project.org/package=MuMIn
 
 library(MuMIn)
