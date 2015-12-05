@@ -10,7 +10,7 @@
 ###    Principal Investigator of the study:
 ###    Antonio Preti, M.D.
 ###    Centro Medico Genneruxi
-###    Via Costantinopoli 42, 09129 Cagliari – Italy 
+###    Via Costantinopoli 42, 09129 Cagliari â€“ Italy 
 ###    e-mail: apreti@tin.it 
 
 ### Cagliari (Italy), August 27, 2015.
@@ -96,7 +96,7 @@ attach(dat)
 ##################################################################################################
 
 ### The dataset includes information on sex and age of the participants
-### sex: males = m (n° = 305), females = f (n° = 344)
+### sex: males = m (nÂ° = 305), females = f (nÂ° = 344)
 ### age is a continuous variable, from 19 to 38 years of age (mean = 24.27, SD = 3.49)
 
 ### The dataset includes the 74 items of the SPQ in the same order as in the original scale
@@ -289,5 +289,3 @@ legend("topright", legend = "Median", text.col = "red",
 ### It is evident that IR, UPE, OS and S have correlations above the median in the matrix
 ### ESA, NCF, MT and CA have correlations below the median in the matrix
 ### OB is on the median, but most values are below it
-
-
